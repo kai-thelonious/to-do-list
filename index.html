@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <main>
+        <div class="title-frame">
+            <h1>To Do List</h1>
+        </div>
+
+        <div class="content">
+            <div class="projects">
+                <h2>Projects</h2>
+                <ol>
+                    <li>Work</li>
+                    <li>Home</li>
+                    <li>About</li>
+                </ol>
+
+                <div class="button-container">
+                    <button id="add-new-project-btn">add new</button>
+                </div>
+
+            </div>
+
+            <div class="current-project">
+                <h2>Work — Tasks</h2>
+                <ol class="current-project-list">
+
+                </ol>
+                <div class="button-container">
+                    <button id="add-new-task-btn">add new</button>
+                </div>
+            </div>
+            <div class="current-task hidden">
+
+            </div>
+
+        </div>
+        <!-- Add new project -->
+        <!-- <div id="modal-overlay" class="hidden"></div> -->
+        <div id="project-modal" class="hidden">
+            <h3>Add New Project</h3>
+            <input type="text" id="project-title" placeholder="Project Name">
+
+            <div class="modal-buttons">
+                <button id="close-modal">Cancel</button>
+                <button id="submit-project">Add Project</button>
+            </div>
+        </div>
+
+
+
+        <!-- Add new task -->
+
+        <div id="modal-overlay" class="hidden"></div>
+
+        <div id="task-modal" class="hidden">
+            <h3>Add New Task</h3>
+            <input type="text" id="task-title" placeholder="Task Name">
+            <div class="priority-selection">
+                <input type="radio" name="priority" value="High" id="prio-high">
+                <label for="prio-high">High</label>
+
+                <input type="radio" name="priority" value="Medium" id="prio-med">
+                <label for="prio-med">Medium</label>
+
+                <input type="radio" name="priority" value="Low" id="prio-low">
+                <label for="prio-low">Low</label>
+            </div>
+            <div class="input-group">
+                <label for="task-date">Due Date:</label>
+                <input type="date" id="task-date" name="task-date">
+            </div>                
+            <textarea id="task-desc" placeholder="Description"></textarea>
+            <div class="modal-buttons">
+                <button id="close-modal">Cancel</button>
+                <button id="submit-task">Add Task</button>
+            </div>
+        </div>
+    </main>
+
+
+    <script src="test.js"></script>
+</body>
+
+</html>

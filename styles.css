@@ -13,6 +13,10 @@ h1 {
     font-size: 128px;
 }
 
+h2 {
+    font-size: 20px;
+}
+
 .content {
     background-color: bisque;
     width: 912px;
@@ -20,6 +24,7 @@ h1 {
     justify-content: space-evenly;
     box-sizing: border-box;
     height: min-content;
+    min-height: 400px;
     
 }
 
@@ -79,4 +84,13 @@ h1 {
 
 #modal-overlay {
     transition: opacity 0.3s ease;
+}
+
+button {
+    background-color: black;
+    color: bisque;
+    border-radius: 18px;
+    border: none;
+    padding: 8px 14px;
+    font-family: inherit;
 }

@@ -1,227 +1,274 @@
-// Load preset tasks to start page
-function displayTasks(list, amount) {
-    const parentDiv = document.querySelector(".current-project-list")
-    let html = ''
-    for (let i = 0; i < amount; i++) {
-        const currentTask = list[i]
-        html += `
-             <li data-index="${i}">${currentTask.title}</li>
-            `;
-    }
-    parentDiv.innerHTML = html
-}
+// --- Model: Data & Logic ---
 
-
-// load preset projects
-function displayProjects(list, amount) {
-    const parentDiv = document.querySelector(".project-list")
-    let html = ''
-    for (let i = 0; i < amount; i++) {
-      const project = list[i];
-      html += `
-             <li data-index="${i}">${project.title}</li>
-            `
-    }
-    parentDiv.innerHTML = html
-}
-
-
-// project factory
-let myProjects = []
-
-class Projects {
-    constructor(title) {
-        this.title = title;
-        console.log(this)
-        myProjects.push(this);
-    }
-    static logger() {
-        const amount = myProjects.length;
-        const list = myProjects;
-        displayProjects(list, amount);
-    }
-}
-
-function createProject(title) {
-    new Projects(title)
-}
-
-
-// task factory
-let myTasks = []
-
-class Tasks {
-    constructor(title, dueDate, description, priority) {
-        this.title = title
-        this.dueDate = dueDate
-        this.description = description
-        this.priority = priority
-
-        myTasks.push(this)
-    }
-
-    static logger() {
-        const amount = myTasks.length
-        const list = myTasks
-        displayTasks(list, amount)
-    }
-}
-
-function createTask(title, dueDate, description, priority) {
-    new Tasks(title, dueDate, description, priority)
-}
-
-// Load presets
-createTask("Make dinner", "today", "I'm gonna make a nice dinner for my girlfriend", "high")
-createTask("Program something cool", "Everyday")
-createTask("Clean my desk", "Today", "pls clean my desk")
-
-createProject("Work")
-createProject("Home");
-createProject("Other");
-Tasks.logger()
-Projects.logger()
-
-// display clicked task
-const parentTaskDiv = document.querySelector(".current-project-list");
-parentTaskDiv.addEventListener("click", (e) => {
-    console.log("clicked on:", e.target)
-    const taskItem = e.target
-    if (taskItem) {
-        const index = taskItem.getAttribute('data-index')
-        console.log(index)
-        const taskData = myTasks[index]
-        console.log(taskData)
-        showTask(taskData)
-    }
-})
-
-
-// display selected task
-const currentTaskParentDiv = document.querySelector('.current-task')
-
-function showTask(task) {
-    // currentTaskParentDiv.classList.toggle('hidden')
-    currentTaskParentDiv.classList.remove('hidden')
-    const html = `
-           
-                    <div class="task-title">
-                        <h2>${task.title}</h2>
-                        <h4 class="priority">High Priority</h4>
-                    </div>
-                
-                    <p class="task-due">Task due: ${task.dueDate}</p>
-
-                    <div class="description-div">
-                        <p class="description">Description:</p>
-                        <p class="description" id="user-description">${task.description}</p>
-                    </div>    
-        
-    `
-    const taskDiv = document.querySelector('.current-task')
-    taskDiv.innerHTML = html
-
-}
-
-
-
-//add project, add task buttons & modal
-const overlay = document.querySelector("#modal-overlay");
-const modalTask = document.querySelector("#task-modal");
-const modalProject = document.querySelector("#project-modal");
-
-const addProjectBtn = document.querySelector("#add-new-project-btn");
-const addTaskBtn = document.querySelector("#add-new-task-btn");
-const closeBtn = document.querySelectorAll(".close-modal")
-
-// add project
-addProjectBtn.addEventListener('click', () => {
-    modalProject.classList.remove("hidden");
-    overlay.classList.remove("hidden");
- 
-})
-
-// add task
-addTaskBtn.addEventListener('click', () => {
-    modalTask.classList.remove('hidden')
-    overlay.classList.remove('hidden')
-
-})
-
-// hide the modal function
-const hideModal = () => {
-    modalTask.classList.add('hidden')
-    modalProject.classList.add('hidden')
-    overlay.classList.add('hidden')
-}
-
-// hide when pressing close button
-closeBtn.forEach((btn) => {
-    btn.addEventListener("click", hideModal);
-})
-
-// hide when pressing background
-overlay.addEventListener('click', hideModal)
-
-// grab task data and display it to task
-const submitTaskBtn = document.querySelector("#submit-task");
-submitTaskBtn.addEventListener("click", submitTask);
-
-
-
-function submitTask() {
-     const title = document.querySelector("#task-title").value;
-     const date = document.querySelector("#task-date").value;
-     const desc = document.querySelector("#task-desc").value;
-     const checkedRadio = document.querySelector(
-       'input[name="priority"]:checked'
-     );
-    const priority = checkedRadio.value;
-
-     if (checkedRadio) {
-       console.log(priority) // "High", "Medium", or "Low"
-     }
-     if (!title || !date) {
-       alert("Please fill out the title and date!")
-       return;
-     }
-
-     // 5. Create your new Task object
-     createTask(title, date, desc, priority);
-
-     // 6. Clear the form and hide the modal
-     hideModal();
-     resetForm();
-     Tasks.logger();
-     console.log(myTasks);
-}
-
-// submit project
-const submitProjectBtn = document.querySelector("#submit-project")
-submitProjectBtn.addEventListener('click', submitProject)
-
-function submitProject() {
-    const title = document.querySelector("#project-title").value;
-    if (!title) {
-        alert("Please enter a project title")
-        return
-    }
-   
-    createProject(title)
-    hideModal()
-    title.innerHTML = ''
-    Projects.logger()
-    console.log(myProjects)
-}
-
-function resetForm() {
-  document.querySelector("#task-title").value = "";
-  document.querySelector("#task-date").value = "";
-  document.querySelector("#task-desc").value = "";
-
-  const checkedRadio = document.querySelector('input[name="priority"]:checked');
-
-  if (checkedRadio) {
-    checkedRadio.checked = false;
+class Project {
+  constructor(title) {
+    this.title = title;
   }
 }
+
+class Task {
+  constructor(title, dueDate, description, priority, projectIndex) {
+    this.title = title;
+    this.dueDate = dueDate;
+    this.description = description;
+    this.priority = priority;
+    this.projectIndex = projectIndex;
+  }
+}
+
+const TodoManager = {
+  projects: [],
+  tasks: [],
+
+  addProject(title) {
+    const newProject = new Project(title);
+    this.projects.push(newProject);
+    return newProject;
+  },
+
+  addTask(title, dueDate, description, priority, projectIndex) {
+    const newTask = new Task(title, dueDate, description, priority, projectIndex);
+    this.tasks.push(newTask);
+    return newTask;
+  },
+
+  getProjects() {
+    return this.projects;
+  },
+
+  getTasks(projectIndex = null) {
+    if (projectIndex === null) {
+      return this.tasks;
+    }
+    return this.tasks.filter(task => task.projectIndex == projectIndex);
+  }
+};
+
+// --- View: DOM Manipulation ---
+
+const UIManager = {
+  // Cache DOM elements
+  elements: {
+    projectList: document.querySelector(".project-list"),
+    taskList: document.querySelector(".current-project-list"),
+    tasks: document.querySelector(".current-project"),
+    taskDetails: document.querySelector(".current-task"),
+    projectHeader: document.querySelector(".current-project h2"),
+    
+    // Modals & Overlay
+    overlay: document.querySelector("#modal-overlay"),
+    modalTask: document.querySelector("#task-modal"),
+    modalProject: document.querySelector("#project-modal"),
+    
+    // Form Inputs
+    taskTitleInput: document.querySelector("#task-title"),
+    taskDateInput: document.querySelector("#task-date"),
+    taskDescInput: document.querySelector("#task-desc"),
+    projectTitleInput: document.querySelector("#project-title"),
+    taskProjectSelect: document.querySelector("#task-project-select"),
+  },
+
+  renderTasks(tasks) {
+    let html = "";
+    if (tasks.length === 0) {
+      html = "<li>No tasks found for this project.</li>";
+    } else {
+      tasks.forEach((task, index) => {
+        html += `<li data-index="${index}">${task.title}</li>`;
+      });
+    }
+    this.elements.taskList.innerHTML = html;
+  },
+
+  renderProjects(projects) {
+    let html = "";
+    projects.forEach((project, index) => {
+      html += `<li data-index="${index}">${project.title}</li>`;
+    });
+    this.elements.projectList.innerHTML = html;
+    this.populateProjectSelect(projects);
+  },
+
+  populateProjectSelect(projects) {
+    let html = "";
+    projects.forEach((project, index) => {
+      html += `<option value="${index}">${project.title}</option>`;
+    });
+    // Create the select element if it doesn't exist in HTML yet, or just update options
+    // For now assuming we will add <select id="task-project-select"> to HTML
+    if(this.elements.taskProjectSelect) {
+        this.elements.taskProjectSelect.innerHTML = html;
+    }
+  },
+
+  showTaskDetails(task) {
+
+
+    this.elements.taskDetails.classList.remove("hidden");
+    const html = `
+      <div class="task-title">
+          <h2>${task.title}</h2>
+          <h4 class="priority">Priority: ${task.priority || 'Normal'}</h4>
+      </div>
+  
+      <p class="task-due">Task due: ${task.dueDate}</p>
+
+      <div class="description-div">
+          <p class="description">Description:</p>
+          <p class="description" id="user-description">${task.description || 'No description provided.'}</p>
+      </div>    
+    `;
+    this.elements.taskDetails.innerHTML = html;
+  },
+
+  openModal(type) {
+    this.elements.overlay.classList.remove("hidden");
+    if (type === 'task') {
+      this.elements.modalTask.classList.remove("hidden");
+    } else if (type === 'project') {
+      this.elements.modalProject.classList.remove("hidden");
+    }
+  },
+
+  closeModals() {
+    this.elements.overlay.classList.add("hidden");
+    this.elements.modalTask.classList.add("hidden");
+    this.elements.modalProject.classList.add("hidden");
+  },
+
+  resetForms() {
+    this.elements.taskTitleInput.value = "";
+    this.elements.taskDateInput.value = "";
+    this.elements.taskDescInput.value = "";
+    this.elements.projectTitleInput.value = "";
+    
+    const checkedRadio = document.querySelector('input[name="priority"]:checked');
+    if (checkedRadio) checkedRadio.checked = false;
+  }
+};
+
+// --- Controller: App Logic & Events ---
+
+const App = {
+  currentProjectIndex: 0, // Default to first project
+
+  init() {
+    this.loadPresets();
+    this.renderAll();
+    this.bindEvents();
+    // Initial load for default project
+    this.switchProject(0);
+  },
+
+  loadPresets() {
+    TodoManager.addProject("Work");  // Index 0
+    TodoManager.addProject("Home");  // Index 1
+    TodoManager.addProject("Other"); // Index 2
+
+    // Work Tasks
+    TodoManager.addTask("Complete report", "2023-10-27", "Finish the quarterly report", "high", 0);
+    TodoManager.addTask("Email boss", "2023-10-28", "Ask for a raise", "medium", 0);
+
+    // Home Tasks
+    TodoManager.addTask("Make dinner", "today", "I'm gonna make a nice dinner for my girlfriend", "high", 1);
+    TodoManager.addTask("Clean my desk", "Today", "pls clean my desk", "low", 1);
+
+    // Other Tasks
+    TodoManager.addTask("Program something cool", "Everyday", "Keep coding!", "medium", 2);
+  },
+
+  renderAll() {
+    UIManager.renderProjects(TodoManager.getProjects());
+    // Render tasks for the current project
+    UIManager.renderTasks(TodoManager.getTasks(this.currentProjectIndex));
+  },
+
+  switchProject(index) {
+    this.currentProjectIndex = index;
+    const project = TodoManager.getProjects()[index];
+    UIManager.updateProjectHeader(project.title);
+    UIManager.renderTasks(TodoManager.getTasks(index));
+  },
+
+  handleTaskSubmit() {
+    const title = UIManager.elements.taskTitleInput.value;
+    const date = UIManager.elements.taskDateInput.value;
+    const desc = UIManager.elements.taskDescInput.value;
+    const projectIndex = UIManager.elements.taskProjectSelect.value;
+    const checkedRadio = document.querySelector('input[name="priority"]:checked');
+    const priority = checkedRadio ? checkedRadio.value : "Normal";
+
+    if (!title || !date) {
+      alert("Please fill out the title and date!");
+      return;
+    }
+
+    TodoManager.addTask(title, date, desc, priority, projectIndex);
+    
+    UIManager.closeModals();
+    UIManager.resetForms();
+    
+    // Refresh current view if we added to the current project
+    if (projectIndex == this.currentProjectIndex) {
+        UIManager.renderTasks(TodoManager.getTasks(this.currentProjectIndex));
+    }
+  },
+
+  handleProjectSubmit() {
+    const title = UIManager.elements.projectTitleInput.value;
+    
+    if (!title) {
+      alert("Please enter a project title");
+      return;
+    }
+
+    TodoManager.addProject(title);
+    
+    UIManager.closeModals();
+    UIManager.resetForms();
+    UIManager.renderProjects(TodoManager.getProjects());
+  },
+
+  bindEvents() {
+    // Open Modals
+    document.querySelector("#add-new-project-btn").addEventListener("click", () => UIManager.openModal('project'));
+    document.querySelector("#add-new-task-btn").addEventListener("click", () => {
+        // Pre-select current project in the dropdown
+        UIManager.elements.taskProjectSelect.value = this.currentProjectIndex;
+        UIManager.openModal('task');
+    });
+
+    // Close Modals
+    document.querySelectorAll(".close-modal").forEach(btn => {
+      btn.addEventListener("click", () => UIManager.closeModals());
+    });
+    UIManager.elements.overlay.addEventListener("click", () => UIManager.closeModals());
+
+    // Submit Forms
+    document.querySelector("#submit-task").addEventListener("click", () => this.handleTaskSubmit());
+    document.querySelector("#submit-project").addEventListener("click", () => this.handleProjectSubmit());
+
+    // Task List Interaction
+    UIManager.elements.taskList.addEventListener("click", (e) => {
+      if (e.target.tagName === 'LI') {
+        const index = e.target.getAttribute("data-index");
+        // Note: The index in the list matches the index in the filtered array, not the global tasks array
+        // We need to get the filtered list again to find the correct task object
+        const currentTasks = TodoManager.getTasks(this.currentProjectIndex);
+        const task = currentTasks[index];
+        UIManager.showTaskDetails(task);
+      }
+    });
+
+    // Project List Interaction
+    UIManager.elements.projectList.addEventListener("click", (e) => {
+      if (e.target.tagName === 'LI') {
+        const index = e.target.getAttribute("data-index");
+        this.switchProject(index);
+      }
+    });
+  }
+};
+
+// Start the App
+App.init();

@@ -36,8 +36,7 @@
                     <button id="add-new-task-btn">add new</button>
                 </div>
             </div>
-            <div class="current-task hidden">
-
+            <div class="current-task">
             </div>
 
         </div>
@@ -76,6 +75,12 @@
                 <label for="task-date">Due Date:</label>
                 <input type="date" id="task-date" name="task-date">
             </div>                
+            <div class="input-group">
+                <label for="task-project-select">Project:</label>
+                <select id="task-project-select" name="task-project">
+                    <!-- Options populated by JS -->
+                </select>
+            </div>
             <textarea id="task-desc" placeholder="Description"></textarea>
             <div class="modal-buttons">
                 <button class="close-modal">Cancel</button>

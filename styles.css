@@ -1,5 +1,6 @@
 html {
-    font-family: "inter", sans-serif;
+    font-family: "departure mono", sans-serif;
+    background-color: rgb(241, 241, 241);
 }
 
 main {
@@ -13,16 +14,17 @@ h1 {
 }
 
 .content {
-    border: 1px solid black;
+    background-color: bisque;
     width: 912px;
     display: flex;
     justify-content: space-evenly;
     box-sizing: border-box;
+    height: min-content;
     
 }
 
 .projects, .current-project, .current-task {
-    border: 1px solid red;
+    color: rgb(29, 29, 29);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -31,6 +33,7 @@ h1 {
     gap: 40px;
     width: 212px;
     height: 309px;
+    height: min-content;
 
 }
 

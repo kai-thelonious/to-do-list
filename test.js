@@ -89,13 +89,15 @@ const UIManager = {
     this.populateProjectSelect(projects);
   },
 
+  updateProjectHeader(title) {
+    this.elements.projectHeader.textContent = `${title} — Tasks`;
+  },
+
   populateProjectSelect(projects) {
     let html = "";
     projects.forEach((project, index) => {
       html += `<option value="${index}">${project.title}</option>`;
     });
-    // Create the select element if it doesn't exist in HTML yet, or just update options
-    // For now assuming we will add <select id="task-project-select"> to HTML
     if(this.elements.taskProjectSelect) {
         this.elements.taskProjectSelect.innerHTML = html;
     }
